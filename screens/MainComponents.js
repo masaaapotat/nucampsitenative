@@ -1,14 +1,19 @@
 import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Image, Text, Platform, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
 import CampsiteInfoScreen from "./CampsiteInfoScreen";
 import DirectoryScreen from "./DirectoryScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import HomeScreen from "./HomeScreen";
 import AboutScreen from "./AboutScreen";
 import ContactScreen from "./ContactScreen";
 import { Icon } from "react-native-elements";
+import logo from "../assets/images/logo.png";
 
 // Create the drawer navigator
 const Drawer = createDrawerNavigator();
@@ -50,10 +55,7 @@ const HomeNavigator = () => {
 const DirectoryNavigator = () => {
   const Stack = createStackNavigator();
   return (
-    <Stack.Navigator
-      initialRouteName="Directory"
-      screenOptions={screenOptions}
-    >
+    <Stack.Navigator initialRouteName="Directory" screenOptions={screenOptions}>
       <Stack.Screen
         name="Directory"
         component={DirectoryScreen}
@@ -131,6 +133,25 @@ const ContactNavigator = () => {
   );
 };
 
+// Custom drawer content component
+const customDrawerContent = (props) => {
+  return (
+    // Displays the content inside the drawer into a scrollable container
+    <DrawerContentScrollView {...props}>
+      <View style={styles.drawerHeader}>
+        <View style={{ flex: 1 }}>
+          <Image source={logo} style={styles.drawerImage} />
+        </View>
+        <View style={{ flex: 2 }}>
+          <Text style={styles.drawerHeaderText}>NuCamp</Text>
+        </View>
+      </View>
+      {/* Displays all the links that were previously in the drawer */}
+      <DrawerItemList {...props} labelStyle={{ fontWeight: "bold" }} />
+    </DrawerContentScrollView>
+  );
+};
+
 // Main component that sets up the drawer navigator
 const Main = () => {
   return (
@@ -142,6 +163,8 @@ const Main = () => {
     >
       <Drawer.Navigator
         initialRouteName="Home"
+        // Tells the DrawerNavigator to use the custom drawer content to render the drawer
+        drawerContent={customDrawerContent}
         drawerStyle={{ backgroundColor: "#CEC8FF" }}
       >
         <Drawer.Screen
@@ -217,8 +240,26 @@ const Main = () => {
   );
 };
 
-// Styles for the stack icon
+// Styles for the stack icon and drawer content
 const styles = StyleSheet.create({
+  drawerHeader: {
+    backgroundColor: "#5637DD",
+    height: 140,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    flexDirection: "row",
+  },
+  drawerHeaderText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  drawerImage: {
+    margin: 10,
+    height: 60,
+    width: 60,
+  },
   stackIcon: {
     marginLeft: 10,
     color: "#fff",
