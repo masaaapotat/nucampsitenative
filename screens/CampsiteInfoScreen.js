@@ -1,13 +1,21 @@
-import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import RenderCampsite from "../features/campsites/RenderCampsites";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleFavorite } from "../features/favorites/favoritesSlice";
+
+// Component to display campsite information and associated comments
 const CampsiteInfoScreen = ({ route }) => {
+  // Destructure campsite from route params
   const { campsite } = route.params;
+  // Get comments from the Redux store
   const comments = useSelector((state) => state.comments);
 
-  // state variable to track if the campsite is marked as a favorite
-  const [favorite, setFavorite] = useState(false);
+  // Get favorite campsites from the Redux store
+  const favorites = useSelector((state) => state.favorites);
+  // Use dispatch to dispatch actions to the Redux store
+  const dispatch = useDispatch();
+
+  // Function to render each comment item
   const renderCommentItem = ({ item }) => {
     return (
       <View style={styles.commentItem}>
@@ -19,9 +27,9 @@ const CampsiteInfoScreen = ({ route }) => {
       </View>
     );
   };
-  return (
-    // flatlist component handles all the rendering of the page inluding the list comments
 
+  return (
+    // FlatList component handles all the rendering of the page including the list comments
     <FlatList
       data={comments.commentsArray.filter(
         // getting the campsite id from our route prop
@@ -36,16 +44,21 @@ const CampsiteInfoScreen = ({ route }) => {
       // if you want to show a comment above or below a flatlist, use listheader or listfootercomponent
       ListHeaderComponent={
         <>
-          <RenderCampsite campsite={campsite}
-            isFavorite={favorite}
-            markFavorite={() => setFavorite(true)} />
-
+          <RenderCampsite 
+            campsite={campsite}
+            // Check if the campsite is in the favorites array
+            isFavorite={favorites.includes(campsite.id)}
+            // Dispatch action to toggle favorite status
+            markFavorite={() => dispatch(toggleFavorite(campsite.id))} 
+          />
           <Text style={styles.commentsTitle}>Comments</Text>
         </>
       }
     />
   );
 };
+
+// Styles for the component
 const styles = StyleSheet.create({
   commentsTitle: {
     textAlign: "center",
