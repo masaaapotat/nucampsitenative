@@ -1,24 +1,42 @@
-import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
+import Loading from '../components/LoadingComponent';
 
-// FeaturedItem component displays the featured item passed as a prop
-const FeaturedItem = ({ item }) => {
+// Component to display a featured item with loading and error handling
+const FeaturedItem = (props) => {
+    const { item } = props; // Destructure item from props
+
+    // Display loading component if data is being fetched
+    if (props.isLoading) {
+        return <Loading />;
+    }
+    // Display error message if there is an error
+    if (props.errMess) {
+        return (
+            <View>
+                <Text>{props.errMess}</Text>
+            </View>
+        );
+    }
+    // Display the featured item if data is available
     if (item) {
         return (
             <Card containerStyle={{ padding: 0 }}>
-                {/* Display the image of the item */}
                 <Card.Image source={{ uri: baseUrl + item.image }}>
                     <View style={{ justifyContent: 'center', flex: 1 }}>
-                        {/* Display the name of the item */}
-                        <Text style={{ color: 'white', textAlign: 'center', fontSize: 20 }}>
+                        <Text
+                            style={{
+                                color: 'white',
+                                textAlign: 'center',
+                                fontSize: 20
+                            }}
+                        >
                             {item.name}
                         </Text>
                     </View>
                 </Card.Image>
-                {/* Display the description of the item */}
                 <Text style={{ margin: 20 }}>{item.description}</Text>
             </Card>
         );
@@ -27,34 +45,38 @@ const FeaturedItem = ({ item }) => {
     return <View />;
 };
 
-// HomeScreen component displays the featured campsite, promotion, and partner
+// Main HomeScreen component that displays featured campsite, promotion, and partner
 const HomeScreen = () => {
-    // Select data from the Redux store
+    // Retrieve data from the Redux store using useSelector hook
     const campsites = useSelector((state) => state.campsites);
     const promotions = useSelector((state) => state.promotions);
     const partners = useSelector((state) => state.partners);
 
-    // Display loading text while data is being fetched
-    if (campsites.isLoading || promotions.isLoading || partners.isLoading) {
-        return <Text>Loading...</Text>;
-    }
-
-    // Display error message if any fetch request fails
-    if (campsites.errMess || promotions.errMess || partners.errMess) {
-        return <Text>{campsites.errMess || promotions.errMess || partners.errMess}</Text>;
-    }
-
-    // Find the featured campsite, promotion, and partner
+    // Find the featured items from the arrays
     const featCampsite = campsites.campsitesArray.find((item) => item.featured);
-    const featPromotion = promotions.promotionsArray.find((item) => item.featured);
+    const featPromotion = promotions.promotionsArray.find(
+        (item) => item.featured
+    );
     const featPartner = partners.partnersArray.find((item) => item.featured);
 
-    // Render the featured items in a scrollable view
+    // Render the featured items inside a scrollable view
     return (
         <ScrollView>
-            <FeaturedItem item={featCampsite} />
-            <FeaturedItem item={featPromotion} />
-            <FeaturedItem item={featPartner} />
+            <FeaturedItem
+                item={featCampsite}
+                isLoading={campsites.isLoading}
+                errMess={campsites.errMess}
+            />
+            <FeaturedItem
+                item={featPromotion}
+                isLoading={promotions.isLoading}
+                errMess={promotions.errMess}
+            />
+            <FeaturedItem
+                item={featPartner}
+                isLoading={partners.isLoading}
+                errMess={partners.errMess}
+            />
         </ScrollView>
     );
 };
