@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import RenderCampsite from "../features/campsites/RenderCampsites";
-import { COMMENTS } from "../shared/comments";
+import { useSelector } from "react-redux";
 const CampsiteInfoScreen = ({ route }) => {
   const { campsite } = route.params;
-  const [comments, setComments] = useState(COMMENTS);
+  const comments = useSelector((state) => state.comments);
+
   // state variable to track if the campsite is marked as a favorite
   const [favorite, setFavorite] = useState(false);
   const renderCommentItem = ({ item }) => {
@@ -22,7 +23,7 @@ const CampsiteInfoScreen = ({ route }) => {
     // flatlist component handles all the rendering of the page inluding the list comments
 
     <FlatList
-      data={comments.filter(
+      data={comments.commentsArray.filter(
         // getting the campsite id from our route prop
         (comment) => comment.campsiteId === campsite.id
       )}

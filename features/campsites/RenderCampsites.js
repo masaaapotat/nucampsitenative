@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Card, Icon } from "react-native-elements";
+import { baseUrl } from "../../shared/baseUrl";
 
 // RenderCampsite component receives props
 const RenderCampsite = (props) => {
@@ -12,7 +13,7 @@ const RenderCampsite = (props) => {
     return (
       <Card containerStyle={styles.cardContainer}>
         {/* Display the campsite image */}
-        <Card.Image source={campsite.image}>
+        <Card.Image source={{uri: baseUrl + campsite.image}}>
           {/* Overlay text on the image */}
           <View style={{ justifyContent: "center", flex: 1 }}>
             <Text

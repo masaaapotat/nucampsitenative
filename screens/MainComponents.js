@@ -1,4 +1,3 @@
-import React from "react";
 import { Image, Text, Platform, StyleSheet, View } from "react-native";
 import Constants from "expo-constants";
 import CampsiteInfoScreen from "./CampsiteInfoScreen";
@@ -14,6 +13,13 @@ import AboutScreen from "./AboutScreen";
 import ContactScreen from "./ContactScreen";
 import { Icon } from "react-native-elements";
 import logo from "../assets/images/logo.png";
+
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchPartners } from "../features/partners/partnersSlice";
+import { fetchCampsites } from "../features/campsites/campsitesSlice";
+import { fetchPromotions } from "../features/promotions/promotionsSlice";
+import { fetchComments } from "../features/comments/commentsSlice";
 
 // Create the drawer navigator
 const Drawer = createDrawerNavigator();
@@ -154,6 +160,15 @@ const customDrawerContent = (props) => {
 
 // Main component that sets up the drawer navigator
 const Main = () => {
+  const dispatch = useDispatch();
+// Using dispatch to dispatch actions
+  useEffect(() => {
+    // Dispatch fetchCampsites action
+      dispatch(fetchCampsites());
+      dispatch(fetchPromotions());
+      dispatch(fetchPartners());
+      dispatch(fetchComments());
+  }, [dispatch]); // Dependencies for useEffect
   return (
     <View
       style={{
