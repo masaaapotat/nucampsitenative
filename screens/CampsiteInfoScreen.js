@@ -4,6 +4,7 @@ import RenderCampsite from "../features/campsites/RenderCampsites";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
 import { Rating, Input } from "react-native-elements";
+import { postComment } from "../features/comments/commentsSlice";
 
 // Component to display campsite information and associated comments
 const CampsiteInfoScreen = ({ route }) => {
@@ -29,7 +30,7 @@ const CampsiteInfoScreen = ({ route }) => {
       text,
       campsiteId: campsite.id,
     };
-    console.log(newComment);
+    dispatch(postComment(newComment));
     setShowModal(!showModal);
     resetForm();
   };
@@ -120,10 +121,7 @@ const CampsiteInfoScreen = ({ route }) => {
             <Button
               color="#5637DD"
               title="Submit"
-              onPress={() => {
-                handleSubmit();
-                resetForm(); // Reset the form
-              }}
+              onPress={handleSubmit}
             />
           </View>
           <View style={{ margin: 10 }}>
