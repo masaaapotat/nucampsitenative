@@ -3,6 +3,7 @@ import { useState } from "react";
 import RenderCampsite from "../features/campsites/RenderCampsites";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
+import { Rating, Input } from "react-native-elements";
 
 // Component to display campsite information and associated comments
 const CampsiteInfoScreen = ({ route }) => {
@@ -17,13 +18,40 @@ const CampsiteInfoScreen = ({ route }) => {
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [author, setAuthor] = useState("");
+  const [text, setText] = useState("");
+
+  const handleSubmit = () => {
+    const newComment = {
+      rating,
+      author,
+      text,
+      campsiteId: campsite.id,
+    };
+    console.log(newComment);
+    setShowModal(!showModal);
+    resetForm();
+  };
+
+  // function to reset the form
+  const resetForm = () => {
+    setRating(5);
+    setAuthor("");
+    setText("");
+  };
 
   // Function to render each comment item
   const renderCommentItem = ({ item }) => {
     return (
       <View style={styles.commentItem}>
+        <Rating
+          imageSize={10}
+          startingValue={item.rating}
+          readonly
+          style={{ alignItems: "flex-start", paddingVertical: "5%" }}
+        />
         <Text style={{ fontSize: 14 }}> {item.text}</Text>
-        <Text style={{ fontSize: 12 }}>{item.rating} Stars</Text>
         <Text style={{ fontSize: 12 }}>{`-- ${item.author}, ${item.date}`}</Text>
       </View>
     );
@@ -66,12 +94,46 @@ const CampsiteInfoScreen = ({ route }) => {
         visible={showModal}
         onRequestClose={() => setShowModal(!showModal)} // Close the modal on request
       >
-        <View style={{ margin: 10 }}>
-          <View>
+        <View style={styles.modal}>
+          <Rating
+            showRating
+            startingValue={rating}
+            imageSize={40}
+            onFinishRating={(rating) => setRating(rating)}
+            style={{ paddingVertical: 10 }}
+          />
+          <Input
+            placeholder="Author"
+            leftIcon={{ type: "font-awesome", name: "user-o" }}
+            leftIconContainerStyle={{ paddingRight: 10 }}
+            onChangeText={(author) => setAuthor(author)}
+            value={author}
+          />
+          <Input
+            placeholder="Comment"
+            leftIcon={{ type: "font-awesome", name: "comment-o" }}
+            leftIconContainerStyle={{ paddingRight: 10 }}
+            onChangeText={(text) => setText(text)}
+            value={text}
+          />
+          <View style={{ margin: 10 }}>
+            <Button
+              color="#5637DD"
+              title="Submit"
+              onPress={() => {
+                handleSubmit();
+                resetForm(); // Reset the form
+              }}
+            />
+          </View>
+          <View style={{ margin: 10 }}>
             <Button
               color="#808080"
               title="Cancel"
-              onPress={() => setShowModal(!showModal)}
+              onPress={() => {
+                setShowModal(!showModal);
+                resetForm(); // Reset the form
+              }}
             />
           </View>
         </View>
