@@ -1,4 +1,5 @@
 import React from "react";
+import {useRef} from "react";
 import { StyleSheet, Text, View, PanResponder, Alert } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
@@ -9,11 +10,16 @@ const RenderCampsite = (props) => {
   // Destructure the campsite object from props
   const { campsite } = props;
 
+  const view = useRef();
+
   // Function to check if swipe is a left swipe
   const isLeftSwipe = ({ dx }) => dx < -200;
 
   // Create PanResponder to handle swipe gestures
   const panResponder = PanResponder.create({
+    onPanResponderGrant: () => {view.current.rubberBand(1000)
+      .then(endState => console.log(endState.finished ? 'finished' : 'cancelled'));
+    },
     onStartShouldSetPanResponder: () => true,
     onPanResponderEnd: (e, gestureState) => {
       console.log("pan responder end", gestureState.dx);
@@ -49,6 +55,7 @@ const RenderCampsite = (props) => {
         animation="fadeInDownBig"
         duration={2000}
         delay={1000}
+        ref={view}
         {...panResponder.panHandlers}
       >
         {/* Card component */}
