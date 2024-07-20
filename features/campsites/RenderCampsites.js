@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
+import * as Animatable from 'react-native-animatable';
 
 // RenderCampsite component receives props
 const RenderCampsite = (props) => {
@@ -11,49 +12,46 @@ const RenderCampsite = (props) => {
   // If campsite is provided, render the campsite details
   if (campsite) {
     return (
-      <Card containerStyle={styles.cardContainer}>
-        {/* Display the campsite image */}
-        <Card.Image source={{ uri: baseUrl + campsite.image }}>
-          {/* Overlay text on the image */}
-          <View style={{ justifyContent: "center", flex: 1 }}>
-            <Text
-            style={styles.cardText}
-              // style={{
-              //   color: "white",
-              //   textAlign: "center",
-              //   fontSize: 20,
-              // }}
-            >
-              {campsite.name}
-            </Text>
+      // Animatable View
+      <Animatable.View animation="fadeInDownBig" duration={2000} delay={1000}>
+        {/* Card component */}
+        <Card containerStyle={styles.cardContainer}>
+          {/* Display the campsite image */}
+          <Card.Image source={{ uri: baseUrl + campsite.image }}>
+            {/* Overlay text on the image */}
+            <View style={{ justifyContent: "center", flex: 1 }}>
+              <Text style={styles.cardText}>
+                {campsite.name}
+              </Text>
+            </View>
+          </Card.Image>
+          {/* Display the campsite description */}
+          <Text style={{ margin: 20 }}>{campsite.description}</Text>
+          <View style={styles.cardRow}>
+            {/* Favorite icon with onPress handling */}
+            <Icon
+              name={props.isFavorite ? "heart" : "heart-o"}
+              type="font-awesome"
+              color={"#f50"}
+              raised
+              reverse
+              onPress={() =>
+                props.isFavorite
+                  ? console.log("Already favorite")
+                  : props.markFavorite()
+              }
+            />
+            <Icon
+              name="pencil"
+              type="font-awesome"
+              color={"#5637DD"}
+              raised
+              reverse
+              onPress={() => props.onShowModal()}
+            />
           </View>
-        </Card.Image>
-        {/* Display the campsite description */}
-        <Text style={{ margin: 20 }}>{campsite.description}</Text>
-        <View style={styles.cardRow}>
-          {/* Favorite icon with onPress handling */}
-          <Icon
-            name={props.isFavorite ? "heart" : "heart-o"}
-            type="font-awesome"
-            color={"#f50"}
-            raised
-            reverse
-            onPress={() =>
-              props.isFavorite
-                ? console.log("already favorite")
-                : props.markFavorite(campsite.id)
-            }
-          />
-          <Icon
-            name="pencil"
-            type="font-awesome"
-            color={"#5637DD"}
-            raised
-            reverse
-            onPress={() => props.onShowModal()}
-          />
-        </View>
-      </Card>
+        </Card>
+      </Animatable.View>
     );
   }
   // Return an empty view if no campsite is provided

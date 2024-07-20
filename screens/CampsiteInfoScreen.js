@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
 import { Rating, Input } from "react-native-elements";
 import { postComment } from "../features/comments/commentsSlice";
+import * as Animatable from "react-native-animatable";
 
 // Component to display campsite information and associated comments
 const CampsiteInfoScreen = ({ route }) => {
@@ -59,8 +60,7 @@ const CampsiteInfoScreen = ({ route }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* FlatList component handles all the rendering of the page including the list comments */}
+    <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
       <FlatList
         data={comments.commentsArray.filter(
           // getting the campsite id from our route prop
@@ -87,7 +87,6 @@ const CampsiteInfoScreen = ({ route }) => {
           </>
         }
       />
-
       {/* Modal to show additional campsite information */}
       <Modal
         animationType="slide"
@@ -118,11 +117,7 @@ const CampsiteInfoScreen = ({ route }) => {
             value={text}
           />
           <View style={{ margin: 10 }}>
-            <Button
-              color="#5637DD"
-              title="Submit"
-              onPress={handleSubmit}
-            />
+            <Button color="#5637DD" title="Submit" onPress={handleSubmit} />
           </View>
           <View style={{ margin: 10 }}>
             <Button
@@ -136,7 +131,7 @@ const CampsiteInfoScreen = ({ route }) => {
           </View>
         </View>
       </Modal>
-    </View>
+    </Animatable.View>
   );
 };
 

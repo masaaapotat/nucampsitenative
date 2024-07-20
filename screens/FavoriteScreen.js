@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import * as Animatable from "react-native-animatable";
 import {
   View,
   FlatList,
@@ -102,16 +103,18 @@ const FavoritesScreen = ({ navigation }) => {
 
   // Render the list of favorite campsites
   return (
-    <FlatList
-      // Filter the campsites array to only include favorite campsites
-      data={campsitesArray.filter((campsite) =>
-        favorites.includes(campsite.id)
-      )}
-      // Render each favorite campsite item
-      renderItem={renderFavoriteItem}
-      // Key extractor to provide unique keys for each item
-      keyExtractor={(item) => item.id.toString()}
-    />
+    <Animatable.View animation="fadeInRightBig" duration={2000}>
+      <FlatList
+        // Filter the campsites array to only include favorite campsites
+        data={campsitesArray.filter((campsite) =>
+          favorites.includes(campsite.id)
+        )}
+        // Render each favorite campsite item
+        renderItem={renderFavoriteItem}
+        // Key extractor to provide unique keys for each item
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </Animatable.View>
   );
 };
 
