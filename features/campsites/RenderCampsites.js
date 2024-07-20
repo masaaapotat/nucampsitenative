@@ -1,28 +1,63 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, PanResponder, Alert } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
 
 // RenderCampsite component receives props
 const RenderCampsite = (props) => {
   // Destructure the campsite object from props
   const { campsite } = props;
 
+  // Function to check if swipe is a left swipe
+  const isLeftSwipe = ({ dx }) => dx < -200;
+
+  // Create PanResponder to handle swipe gestures
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderEnd: (e, gestureState) => {
+      console.log("pan responder end", gestureState.dx);
+      if (isLeftSwipe(gestureState)) {
+        Alert.alert(
+          "Add Favorite?",
+          "Are you sure you wish to add the favorite campsite " + campsite.name + "?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () =>
+                props.isFavorite
+                  ? console.log("Already favorite")
+                  : props.markFavorite(campsite.id),
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    },
+  });
+
   // If campsite is provided, render the campsite details
   if (campsite) {
     return (
-      // Animatable View
-      <Animatable.View animation="fadeInDownBig" duration={2000} delay={1000}>
+      // Animatable View with PanResponder
+      <Animatable.View
+        animation="fadeInDownBig"
+        duration={2000}
+        delay={1000}
+        {...panResponder.panHandlers}
+      >
         {/* Card component */}
         <Card containerStyle={styles.cardContainer}>
           {/* Display the campsite image */}
           <Card.Image source={{ uri: baseUrl + campsite.image }}>
             {/* Overlay text on the image */}
             <View style={{ justifyContent: "center", flex: 1 }}>
-              <Text style={styles.cardText}>
-                {campsite.name}
-              </Text>
+              <Text style={styles.cardText}>{campsite.name}</Text>
             </View>
           </Card.Image>
           {/* Display the campsite description */}
@@ -38,7 +73,7 @@ const RenderCampsite = (props) => {
               onPress={() =>
                 props.isFavorite
                   ? console.log("Already favorite")
-                  : props.markFavorite()
+                  : props.markFavorite(campsite.id)
               }
             />
             <Icon
@@ -47,13 +82,14 @@ const RenderCampsite = (props) => {
               color={"#5637DD"}
               raised
               reverse
-              onPress={() => props.onShowModal()}
+              onPress={props.onShowModal}
             />
           </View>
         </Card>
       </Animatable.View>
     );
   }
+
   // Return an empty view if no campsite is provided
   return <View />;
 };
