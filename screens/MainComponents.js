@@ -20,7 +20,7 @@ import { fetchPartners } from "../features/partners/partnersSlice";
 import { fetchCampsites } from "../features/campsites/campsitesSlice";
 import { fetchPromotions } from "../features/promotions/promotionsSlice";
 import { fetchComments } from "../features/comments/commentsSlice";
-
+import FavoriteScreen from "./FavoriteScreen";
 // Create the drawer navigator
 const Drawer = createDrawerNavigator();
 
@@ -161,6 +161,29 @@ const ReservationNavigator = () => {
       </Stack.Navigator>
   );
 };
+
+const FavoritesNavigator = () => {
+  const Stack = createStackNavigator();
+  return (
+      <Stack.Navigator screenOptions={screenOptions}>
+          <Stack.Screen
+              name='Favorites'
+              component={FavoriteScreen}
+              options={({ navigation }) => ({
+                  title: 'Favorite campsites',
+                  headerLeft: () => (
+                      <Icon
+                          name='heart'
+                          type='font-awesome'
+                          iconStyle={styles.stackIcon}
+                          onPress={() => navigation.toggleDrawer()}
+                      />
+                  )
+              })}
+          />
+      </Stack.Navigator>
+  );
+};
 // Custom drawer content component
 const customDrawerContent = (props) => {
   return (
@@ -247,6 +270,24 @@ const Main = () => {
             drawerIcon: ({ color }) => (
               <Icon
                 name="tree"
+                type="font-awesome"
+                size={24}
+                iconStyle={{ width: 24 }}
+                color={color}
+              />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Favorites"
+          component={FavoritesNavigator}
+          // Customizing the drawer icon for the Favorites screen
+          options={{
+            title: "My Favorites",
+            drawerIcon: ({ color }) => (
+              <Icon
+                name="heart"
                 type="font-awesome"
                 size={24}
                 iconStyle={{ width: 24 }}
