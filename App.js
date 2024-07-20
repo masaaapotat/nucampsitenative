@@ -1,14 +1,18 @@
 import Main from './screens/MainComponents';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import { store } from './redux/store';
+import { store, persistor } from './redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import Loading from './components/LoadingComponent';
 
 export default function App() {
     return (
         <Provider store={store}>
+            <PersistGate persistor={persistor} loading={<Loading />} >
             <NavigationContainer>
                 <Main />
             </NavigationContainer>
+            </PersistGate>
         </Provider>
     );
   //   navigation container is used to manage our navigation and must wrap all our components using navigation
