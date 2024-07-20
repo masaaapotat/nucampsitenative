@@ -5,8 +5,8 @@ import {
     StyleSheet,
     Switch,
     Button,
+    Alert,
     Platform,
-    Modal,
     ScrollView
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -15,12 +15,11 @@ import * as Animatable from 'react-native-animatable';
 
 // ReservationScreen component to handle campsite reservations
 const ReservationScreen = () => {
-    // State variables for number of campers, hike-in preference, selected date, calendar visibility, and modal visibility
+    // State variables for number of campers, hike-in preference, selected date, and calendar visibility
     const [campers, setCampers] = useState(1);
     const [hikeIn, setHikeIn] = useState(false);
     const [date, setDate] = useState(new Date());
     const [showCalendar, setShowCalendar] = useState(false);
-    const [showModal, setShowModal] = useState(false);
 
     // Function to handle date change event from DateTimePicker
     const onDateChange = (event, selectedDate) => {
@@ -31,11 +30,23 @@ const ReservationScreen = () => {
 
     // Function to handle reservation submission
     const handleReservation = () => {
-        // Log the reservation details
-        console.log('campers:', campers);
-        console.log('hikeIn:', hikeIn);
-        console.log('date:', date);
-        setShowModal(!showModal); // Show the modal with reservation details
+        // Alert dialog to show the reservation details
+        Alert.alert(
+            'Begin Search?',
+            `Number of Campers: ${campers}\nHike-In: ${hikeIn ? 'Yes' : 'No'}\nDate: ${date.toLocaleDateString('en-US')}`,
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => resetForm(),
+                    style: 'cancel',
+                },
+                {
+                    text: 'OK',
+                    onPress: () => resetForm(),
+                },
+            ],
+            { cancelable: false }
+        );
     };
 
     // Function to reset the form to default values
@@ -99,36 +110,6 @@ const ReservationScreen = () => {
                         accessibilityLabel='Tap me to search for available campsites to reserve'
                     />
                 </View>
-                {/* Modal to display reservation summary */}
-                <Modal
-                    animationType='slide'
-                    transparent={false}
-                    visible={showModal}
-                    onRequestClose={() => setShowModal(!showModal)} // Close the modal on request
-                >
-                    <View style={styles.modal}>
-                        <Text style={styles.modalTitle}>
-                            Search Campsite Reservations
-                        </Text>
-                        <Text style={styles.modalText}>
-                            Number of Campers: {campers}
-                        </Text>
-                        <Text style={styles.modalText}>
-                            Hike-In?: {hikeIn ? 'Yes' : 'No'}
-                        </Text>
-                        <Text style={styles.modalText}>
-                            Date: {date.toLocaleDateString('en-US')}
-                        </Text>
-                        <Button
-                            onPress={() => {
-                                setShowModal(!showModal); // Close the modal
-                                resetForm(); // Reset the form
-                            }}
-                            color='#5637DD'
-                            title='Close'
-                        />
-                    </View>
-                </Modal>
             </Animatable.View>
         </ScrollView>
     );
@@ -149,22 +130,6 @@ const styles = StyleSheet.create({
     },
     formItem: {
         flex: 1
-    },
-    modal: {
-        justifyContent: 'center',
-        margin: 20
-    },
-    modalTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        backgroundColor: '#5637DD',
-        textAlign: 'center',
-        color: '#fff',
-        marginBottom: 20
-    },
-    modalText: {
-        fontSize: 18,
-        margin: 10
     }
 });
 
