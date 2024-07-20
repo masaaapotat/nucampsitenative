@@ -1,5 +1,5 @@
 import React from "react";
-import {useRef} from "react";
+import { useRef } from "react";
 import { StyleSheet, Text, View, PanResponder, Alert } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
@@ -8,25 +8,37 @@ import * as Animatable from "react-native-animatable";
 // RenderCampsite component receives props
 const RenderCampsite = (props) => {
   // Destructure the campsite object from props
-  const { campsite } = props;
-
-  const view = useRef();
-
-  // Function to check if swipe is a left swipe
+  const { campsite } = props; 
+ // Create a reference for the Animatable.View
+ const view = useRef();
+  // Function to check if the gesture is a left swipe
   const isLeftSwipe = ({ dx }) => dx < -200;
+
+  // Function to check if the gesture is a right swipe
+  const isRightSwipe = ({ dx }) => dx > 200;
 
   // Create PanResponder to handle swipe gestures
   const panResponder = PanResponder.create({
-    onPanResponderGrant: () => {view.current.rubberBand(1000)
-      .then(endState => console.log(endState.finished ? 'finished' : 'cancelled'));
+    onPanResponderGrant: () => {
+      // Animates the view when the pan responder is granted
+      view.current
+        .rubberBand(1000)
+        .then((endState) =>
+          console.log(endState.finished ? "finished" : "cancelled")
+        );
     },
-    onStartShouldSetPanResponder: () => true,
+   // Enables the pan responder
+   onStartShouldSetPanResponder: () => true, 
     onPanResponderEnd: (e, gestureState) => {
+      // Handle the end of the pan responder gesture
       console.log("pan responder end", gestureState.dx);
       if (isLeftSwipe(gestureState)) {
+        // If it's a left swipe, show an alert to add the campsite to favorites
         Alert.alert(
           "Add Favorite?",
-          "Are you sure you wish to add the favorite campsite " + campsite.name + "?",
+          "Are you sure you wish to add the favorite campsite " +
+            campsite.name +
+            "?",
           [
             {
               text: "Cancel",
@@ -43,11 +55,14 @@ const RenderCampsite = (props) => {
           ],
           { cancelable: false }
         );
+      } else if (isRightSwipe(gestureState)) {
+        // If it's a right swipe, show the comment form modal
+        props.onShowModal();
       }
     },
   });
 
-  // If campsite is provided, render the campsite details
+  // If a campsite is provided, render the campsite details
   if (campsite) {
     return (
       // Animatable View with PanResponder
@@ -83,6 +98,7 @@ const RenderCampsite = (props) => {
                   : props.markFavorite(campsite.id)
               }
             />
+            {/* Pencil icon to show comment form modal */}
             <Icon
               name="pencil"
               type="font-awesome"
