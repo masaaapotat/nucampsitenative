@@ -21,6 +21,7 @@ import { fetchCampsites } from "../features/campsites/campsitesSlice";
 import { fetchPromotions } from "../features/promotions/promotionsSlice";
 import { fetchComments } from "../features/comments/commentsSlice";
 import FavoriteScreen from "./FavoriteScreen";
+import LoginScreen from "./LoginScreen";
 // Create the drawer navigator
 const Drawer = createDrawerNavigator();
 
@@ -138,7 +139,30 @@ const ContactNavigator = () => {
     </Stack.Navigator>
   );
 };
-
+// login stack navigator component
+const LoginNavigator = () => {
+  const Stack = createStackNavigator();
+  return (
+      <Stack.Navigator screenOptions={screenOptions}>
+          <Stack.Screen
+              name='Login'
+              component={LoginScreen}
+              options={({ navigation }) => ({
+                  title: 'Login',
+                  headerLeft: () => (
+                      <Icon
+                          name='sign-in'
+                          type='font-awesome'
+                          iconStyle={styles.stackIcon}
+                          onPress={() => navigation.toggleDrawer()}
+                      />
+                  )
+              })}
+          />
+      </Stack.Navigator>
+  );
+}
+// Reservation stack navigator component
 const ReservationNavigator = () => {
   const Stack = createStackNavigator();
   return (
@@ -221,12 +245,33 @@ const Main = () => {
         paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
       }}
     >
+   
+
       <Drawer.Navigator
         initialRouteName="Home"
         // Tells the DrawerNavigator to use the custom drawer content to render the drawer
         drawerContent={customDrawerContent}
         drawerStyle={{ backgroundColor: "#CEC8FF" }}
       >
+           {/* drawer for login */}
+           <Drawer.Screen
+          name="Login"
+          component={LoginNavigator}
+          // Customizing the drawer icon for the Login screen
+          options={{
+            
+            drawerIcon: ({ color }) => (
+              <Icon
+                name="sign-in"
+                type="font-awesome"
+                size={24}
+                iconStyle={{ width: 24 }}
+                color={color}
+              />
+            ),
+
+          }}
+        />
         <Drawer.Screen
           name="Home"
           component={HomeNavigator}
