@@ -1,6 +1,6 @@
 import React from "react";
 import { useRef } from "react";
-import { StyleSheet, Text, View, PanResponder, Alert } from "react-native";
+import { StyleSheet,Share, Text, View, PanResponder, Alert } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { baseUrl } from "../../shared/baseUrl";
 import * as Animatable from "react-native-animatable";
@@ -62,6 +62,19 @@ const RenderCampsite = (props) => {
     },
   });
 
+  const shareCampsite = (title, message, url) => {
+    Share.share(
+      {
+        title,
+        message: `${title}: ${message} ${url}`,
+        url,
+      },
+      {
+        dialogTitle: "Share " + title,
+      }
+    )
+  }
+
   // If a campsite is provided, render the campsite details
   if (campsite) {
     return (
@@ -106,6 +119,18 @@ const RenderCampsite = (props) => {
               raised
               reverse
               onPress={props.onShowModal}
+            />
+            {/* Share icon to share the campsite */}
+            <Icon
+              name="share"
+              type="font-awesome"
+              color={"#5637DD"}
+              raised
+              reverse
+              onPress={() => shareCampsite(
+                campsite.name, 
+                campsite.description, 
+                baseUrl + campsite.image)}
             />
           </View>
         </Card>
