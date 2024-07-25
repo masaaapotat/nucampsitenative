@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
-import { CheckBox, Input } from "react-native-elements";
+import { View, ScrollView, StyleSheet } from "react-native";
+import { CheckBox, Input, Button, Icon } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState(""); // State to store the username
-  const [password, setPassword] = useState(""); // State to store the password
-  const [remember, setRemember] = useState(false); // State to manage the "Remember Me" checkbox
+const LoginTab = ({ navigation }) => {
+  // State to store the username
+  const [username, setUsername] = useState("");
+  // State to store the password
+  const [password, setPassword] = useState("");
+  // State to manage the "Remember Me" checkbox
+  const [remember, setRemember] = useState(false);
 
   // Function to handle the login process
   const handleLogin = () => {
@@ -20,12 +24,14 @@ const LoginScreen = ({ navigation }) => {
         "userinfo",
         JSON.stringify({
           username,
-          password
+          password,
         })
       ).catch((error) => console.log("Could not save user info", error));
     } else {
       // Delete stored user information if "Remember Me" is unchecked
-      SecureStore.deleteItemAsync("userinfo").catch((error) => console.log('Could not delete user info', error));
+      SecureStore.deleteItemAsync("userinfo").catch((error) =>
+        console.log("Could not delete user info", error)
+      );
     }
   };
 
@@ -68,14 +74,93 @@ const LoginScreen = ({ navigation }) => {
         containerStyle={styles.formCheckbox}
       />
       <View style={styles.formButton}>
-        <Button color="#5637DD" title="Login" onPress={handleLogin} />
+        <Button
+          color="#5637DD"
+          title="Login"
+          onPress={handleLogin}
+          icon={
+            <Icon
+              name="sign-in"
+              type="font-awesome"
+              color="#fff"
+              iconStyle={{ marginRight: 10 }}
+            />
+          }
+          buttonStyle={{ backgroundColor: "#5637DD" }}
+        />
+        <View style={styles.formButton}>
+          <Button
+            type="clear"
+            title="Register"
+            onPress={navigation.navigate("Register")}
+            icon={
+              <Icon
+                name="user-plus"
+                type="font-awesome"
+                color="blue"
+                iconStyle={{ marginRight: 10 }}
+              />
+            }
+            buttonStyle={{ color: "blue" }}
+          />
+        </View>
       </View>
     </View>
   );
 };
 
+const RegisterTab = () => {
+  return <ScrollView></ScrollView>;
+};
+const Tab = createBottomTabNavigator();
+
+const LoginScreen = () => {
+    const tabBarOptions = {
+        activeBackgroundColor: '#5637DD',
+        inactiveBackgroundColor: '#CEC8FF',
+        activeTintColor: '#fff',
+        inactiveTintColor: '#808080',
+        labelStyle: { fontSize: 16 }
+    };
+
+    return (
+        <Tab.Navigator tabBarOptions={tabBarOptions}>
+            <Tab.Screen
+                name='Login'
+                component={LoginTab}
+                options={{
+                    tabBarIcon: (props) => {
+                        return (
+                            <Icon
+                                name='sign-in'
+                                type='font-awesome'
+                                color={props.color}
+                            />
+                        );
+                    }
+                }}
+            />
+            <Tab.Screen
+                name='Register'
+                component={RegisterTab}
+                options={{
+                    tabBarIcon: (props) => {
+                        return (
+                            <Icon
+                                name='user-plus'
+                                type='font-awesome'
+                                color={props.color}
+                            />
+                        );
+                    }
+                }}
+            />
+        </Tab.Navigator>
+    );
+};
+
 // Styles for the LoginScreen component
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     margin: 20,
@@ -92,7 +177,7 @@ const styles = StyleSheet.create({
   },
   formButton: {
     margin: 60,
-  }
+  },
 });
 
 export default LoginScreen;
