@@ -97,7 +97,7 @@ const ReservationScreen = () => {
                      // Body text of the notification
                     body: `Search for ${reservationDate} requested`,
                 },
-                // Schedule the notification to trigger at the specified date
+                // Schedule the notification to trigger at the specified date 
                 trigger: null, 
             });
         };
