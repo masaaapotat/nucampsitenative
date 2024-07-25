@@ -12,6 +12,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Animatable from 'react-native-animatable';
+import * as Notifications from 'expo-notifications';
 
 // ReservationScreen component to handle campsite reservations
 const ReservationScreen = () => {
@@ -24,7 +25,8 @@ const ReservationScreen = () => {
     // Function to handle date change event from DateTimePicker
     const onDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        setShowCalendar(Platform.OS === 'ios'); // Hide calendar after selecting a date on non-iOS platforms
+        // Hide calendar after selecting a date on non-iOS platforms
+        setShowCalendar(Platform.OS === 'ios'); 
         setDate(currentDate); // Update date state
     };
 
@@ -32,22 +34,35 @@ const ReservationScreen = () => {
     const handleReservation = () => {
         // Alert dialog to show the reservation details
         Alert.alert(
-            'Begin Search?',
+            'Begin Search?', // Title of the alert
+            // Message displaying the reservation details: number of campers, hike-in preference, and selected date
             `Number of Campers: ${campers}\nHike-In: ${hikeIn ? 'Yes' : 'No'}\nDate: ${date.toLocaleDateString('en-US')}`,
             [
                 {
-                    text: 'Cancel',
+                    // Label for the Cancel button
+                    text: 'Cancel', 
+                    // Action to take if Cancel is pressed: reset the form to default values
                     onPress: () => resetForm(),
-                    style: 'cancel',
+                    // Style of the Cancel button
+                    style: 'cancel', 
                 },
                 {
+                     // Label for the OK button
                     text: 'OK',
-                    onPress: () => resetForm(),
+                    // Action to take if OK is pressed
+                    onPress: () => {
+                        // Schedule a local notification with the selected reservation date
+                        presentLocalNotification(date.toLocaleDateString('en-US'));
+                        // Reset the form to default values
+                        resetForm();
+                    }
                 },
             ],
-            { cancelable: false }
+           // The alert dialog cannot be dismissed by tapping outside of it
+           { cancelable: false } 
         );
     };
+    
 
     // Function to reset the form to default values
     const resetForm = () => {
@@ -56,6 +71,50 @@ const ReservationScreen = () => {
         setDate(new Date());
         setShowCalendar(false);
     };
+
+    // Function to schedule reservation notification
+    const presentLocalNotification = async (reservationDate) => {
+        // Function to actually send the notification
+        const sendNotification = () => {
+            // Set the notification handler to define how notifications are handled when they are received
+            Notifications.setNotificationHandler({
+                // Define the behavior of the notification
+                handleNotification: async () => ({
+                     // Show an alert for the notification
+                    shouldShowAlert: true,
+                     // Play a sound when the notification is received
+                    shouldPlaySound: true,
+                    // Set a badge on the app icon
+                    shouldSetBadge: true,
+                }),
+            });
+    
+            // Schedule the notification with the specified content
+            Notifications.scheduleNotificationAsync({
+                content: {
+                  // Title of the notification
+                    title: 'Your Campsite Reservation Search',
+                     // Body text of the notification
+                    body: `Search for ${reservationDate} requested`,
+                },
+                // Schedule the notification to trigger at the specified date
+                trigger: null, 
+            });
+        };
+    
+        // Check the current notification permissions
+        let permissions = await Notifications.getPermissionsAsync();
+        // If permissions are not granted, request them
+        if (!permissions.granted) {
+            permissions = await Notifications.requestPermissionsAsync();
+        }
+    
+        // If permissions are granted, send the notification
+        if (permissions.granted) {
+            sendNotification();
+        }
+    };
+    
 
     return (
         <ScrollView>
