@@ -248,52 +248,49 @@ const Main = () => {
   }, [dispatch]); // Dependencies for useEffect
 
 
-  useEffect(() => {
-    NetInfo.fetch().then((connectionInfo) => {
-        Platform.OS === 'ios'
-            ? Alert.alert(
-                  'Initial Network Connectivity Type:',
-                  connectionInfo.type
-              )
-            : ToastAndroid.show(
-                  'Initial Network Connectivity Type: ' +
-                      connectionInfo.type,
-                  ToastAndroid.LONG
-              );
-    });
-
-    const unsubscribeNetInfo = NetInfo.addEventListener(
-        (connectionInfo) => {
-            handleConnectivityChange(connectionInfo);
-        }
+ // Async function to fetch network information and show initial connectivity type
+ const showNetInfo = async () => {
+  const connectionInfo = await NetInfo.fetch();
+  Platform.OS === 'ios'
+    ? Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
+    : ToastAndroid.show(
+      'Initial Network Connectivity Type: ' + connectionInfo.type,
+      ToastAndroid.LONG
     );
+};
 
-    return unsubscribeNetInfo;
+useEffect(() => {
+  showNetInfo();
+
+  const unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
+    handleConnectivityChange(connectionInfo);
+  });
+
+  return unsubscribeNetInfo;
 }, []);
 
-
-  // Function to handle network connectivity change event
-  const handleConnectivityChange = (connectionInfo) => {
-    let connectionMsg = 'You are now connected to an active network.';
-    switch (connectionInfo.type) {
-        case 'none':
-          connectionMsg='No network connection is active.';
-          break;
-        case 'unknown':
-          connectionMsg='The network connection state is now unknown.';
-          break;
-        case 'cellular':
-          connectionMsg='You are now connected to a cellular network'
-          break;
-        case 'wifi':
-          connectionMsg='You are now connected to a WiFi network.';
-          break;
-    }
-
-    Platform.OS === 'ios'
-        ? Alert.alert('Connection change:', connectionMsg)
-        : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
+// Function to handle network connectivity change event
+const handleConnectivityChange = (connectionInfo) => {
+  let connectionMsg = 'You are now connected to an active network.';
+  switch (connectionInfo.type) {
+    case 'none':
+      connectionMsg = 'No network connection is active.';
+      break;
+    case 'unknown':
+      connectionMsg = 'The network connection state is now unknown.';
+      break;
+    case 'cellular':
+      connectionMsg = 'You are now connected to a cellular network';
+      break;
+    case 'wifi':
+      connectionMsg = 'You are now connected to a WiFi network.';
+      break;
   }
+
+  Platform.OS === 'ios'
+    ? Alert.alert('Connection change:', connectionMsg)
+    : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
+};
   return (
     <View
       style={{
