@@ -4,7 +4,7 @@ import { CheckBox, Input, Button, Icon } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';  
+import * as ImageManipulator from 'expo-image-manipulator';
 import { baseUrl } from '../shared/baseUrl';
 import logo from '../assets/images/logo.png';
 
@@ -186,6 +186,26 @@ const RegisterTab = () => {
         setImageUrl(processedImage.uri);
     };
 
+    //  Set up getImageFromGallery async function
+    const getImageFromGallery = async () => {
+        // Ask for permission to access media library
+        const mediaLibraryPermissions =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (mediaLibraryPermissions.status === 'granted') {
+            // Open image gallery
+            const capturedImage = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            });
+            if (capturedImage.assets) {
+                console.log(capturedImage.assets[0]);
+                // Call processImage with the selected image URI
+                processImage(capturedImage.assets[0].uri);
+            }
+        }
+    };
+
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -198,6 +218,8 @@ const RegisterTab = () => {
                     />
                     {/* Camera Button */}
                     <Button title='Camera' onPress={getImageFromCamera} />
+                    {/* Gallery Button */}
+                    <Button title='Gallery' onPress={getImageFromGallery} />
                 </View>
                 {/* Registration Form Inputs */}
                 <Input
@@ -321,7 +343,7 @@ const LoginScreen = () => {
     );
 };
 
-// Styles for components
+
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
